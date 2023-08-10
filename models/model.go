@@ -30,3 +30,28 @@ type DataKursi struct {
 	NoKursi string `json:"no_kursi"`
 	Status  string `json:"status"`
 }
+
+type DataBus struct {
+	Id           int         `json:"id"`
+	Nama_bus     string      `json:"nama_bus"`
+	Nomor_polisi string      `json:"nomor_polisi"`
+	Jumlah_kursi int         `json:"jumlah_kursi"`
+	Type         string      `json:"type"`
+	Harga        int         `json:"harga"`
+	Status       int         `json:"status"`
+	Detail_bus   []DetailBus `json:"detail_bus"`
+}
+
+type DetailBus struct {
+	Id       int    `json:"id"`
+	Id_bus   int    `json:"id_bus"`
+	No_kursi string `json:"no_kursi"`
+	Status   string `json:"status"`
+}
+
+type Otw struct {
+	Asal          string `json:"asal"`
+	Tgl_berangkat int    `json:"tgl_berangkat"`
+	Tgl_pulang    int    `json:"tgl_pulang"`
+	Tujuan        string `json:"tujuan"`
+}
