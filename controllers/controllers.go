@@ -49,47 +49,78 @@ func Signin(c *gin.Context) {
 		return
 	}
 
+	// Hash Password
 	hashedPassword := md5.Sum([]byte(user.Password))
 	encodePassword := hex.EncodeToString(hashedPassword[:])
 
+	// Konek Database
 	db, err := database.Connect()
 	if err != nil {
 		fmt.Println(err.Error())
 	}
 	defer db.Close()
 
-	query := query.SignIn()
-	rows, err := db.Query(query, &user.Username, encodePassword)
-	if err != nil {
-		fmt.Println("Err", err.Error())
+	// Cek Query Usernamenya ada ga ?
+	var usernameScan string
+	var passwordScan string
+	cek_username := query.CekUsername(user.Username)
+	errUsername := db.QueryRow(cek_username).Scan(&usernameScan)
+
+	if errUsername != nil {
+		c.IndentedJSON(http.StatusNotFound, gin.H{
+			"message": "Username tidak ditemukan",
+		})
 	}
-	defer rows.Close()
 
-	var results []models.Log
+	// Cek Query Passwordnya salah ga ?
+	if len(usernameScan) > 0 {
+		cek_password := query.CekPassword(encodePassword)
+		errPassword := db.QueryRow(cek_password).Scan(&passwordScan)
 
-	// Loop melalui setiap baris hasil dan tambahkan data ke dalam slice
-	for rows.Next() {
+		if errPassword != nil {
+			c.IndentedJSON(http.StatusNotFound, gin.H{
+				"message": "Password Salah",
+			})
+		}
+	}
 
-		var user models.Log
-
-		// Scan data dari baris ke variabel-variabel
-		err := rows.Scan(&user.IdUser, &user.Nama, &user.NoTelp, &user.Email, &user.Password, &user.IdRole, &user.Image)
+	// Jika Semuanya ada maka baru bisa masuk ke dashboard
+	if len(usernameScan) > 0 && len(passwordScan) > 0 {
+		query := query.SignIn()
+		rows, err := db.Query(query, &user.Username, encodePassword)
 		if err != nil {
-			fmt.Println("Error scanning row:", err.Error())
+			fmt.Println("Err", err.Error())
+		}
+		defer rows.Close()
+
+		var results []models.Log
+
+		// Loop melalui setiap baris hasil dan tambahkan data ke dalam slice
+		for rows.Next() {
+
+			var user models.Log
+
+			// Scan data dari baris ke variabel-variabel
+			err := rows.Scan(&user.IdUser, &user.Nama, &user.NoTelp, &user.Email, &user.Password, &user.IdRole, &user.Image)
+			if err != nil {
+				c.IndentedJSON(http.StatusNotFound, gin.H{
+					"message": "data tidak di temukan",
+				})
+				return
+			}
+
+			// Tambahkan peta ke dalam slice
+			results = append(results, user)
+		}
+
+		// Cek apakah ada kesalahan saat mengiterasi melalui hasil
+		if err := rows.Err(); err != nil {
+			fmt.Println("Error during iteration:", err.Error())
 			return
 		}
 
-		// Tambahkan peta ke dalam slice
-		results = append(results, user)
+		c.IndentedJSON(http.StatusOK, results)
 	}
-
-	// Cek apakah ada kesalahan saat mengiterasi melalui hasil
-	if err := rows.Err(); err != nil {
-		fmt.Println("Error during iteration:", err.Error())
-		return
-	}
-
-	c.IndentedJSON(http.StatusOK, results)
 }
 
 func GetKursi(c *gin.Context) {
