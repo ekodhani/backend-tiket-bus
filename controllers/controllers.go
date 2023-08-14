@@ -174,7 +174,6 @@ func GetBus(c *gin.Context) {
 		return
 	}
 
-	fmt.Println("tgl berangkat : ", otw.Tgl_berangkat)
 	// Koneksi Database
 	db, err := database.Connect()
 	if err != nil {
@@ -196,21 +195,23 @@ func GetBus(c *gin.Context) {
 
 	// Loop melalui setiap baris hasil dan tambahkan data ke dalam slice
 	for rows.Next() {
-
 		var dataBus models.DataBus
-
 		// Scan data dari baris ke variabel-variabel
 		err := rows.Scan(&dataBus.Id, &dataBus.Nama_bus, &dataBus.Nomor_polisi, &dataBus.Jumlah_kursi, &dataBus.Type, &dataBus.Harga, &dataBus.Status)
 		if err != nil {
 			fmt.Println("Error scanning row:", err.Error())
 			return
 		}
-
 		// Tambahkan peta ke dalam slice
 		results = append(results, dataBus)
+		// // Query ke database untuk mendapatkan data kursi berdasarkan id bus
+		// getKursi, errorKursi := db.Query(`SELECT * FROM kursi WHERE id_bus = ` + strconv.Itoa(dataBus.Id) + ``)
+		// if errorKursi != nil {
+		// 	fmt.Println("Error querying kursi data:", errorKursi.Error())
+		// 	return
+		// }
+		// defer getKursi.Close()
 	}
-	// Debug
-	fmt.Println(results)
 
 	// Cek apakah ada kesalahan saat mengiterasi melalui hasil
 	if err := rows.Err(); err != nil {

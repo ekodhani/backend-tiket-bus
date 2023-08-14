@@ -11,17 +11,11 @@ func GetBus(tgl, asal, tujuan string) string {
 	A.nomor_polisi,
 	A.jumlah_kursi,
 	A.type,
-	A.status,
-	B.id,
-	B.asal,
-	B.tujuan,
-	B.tgl_berangkat,
-	C.id,
-	C.no_kursi,
-	C.status
+	A.harga,
+	A.status
+
 	FROM bus A
 	LEFT JOIN rute B on B.id_bus = A.id
-	LEFT JOIN kursi C on C.id_bis = A.id
 	
-	WHERE B.tgl_berangkat <=` + tgl + ` and B.asal = '` + asal + `' and B.tujuan = '` + tujuan + `'`
+	WHERE B.tgl_berangkat >=` + tgl + ` and B.asal = '` + asal + `' and B.tujuan = '` + tujuan + `'`
 }
