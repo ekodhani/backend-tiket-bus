@@ -232,3 +232,14 @@ func GetBus(c *gin.Context) {
 		})
 	}
 }
+
+func SaveTiket(c *gin.Context) {
+	var tiket models.Tiket
+
+	if err := c.ShouldBindJSON(&tiket); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	fmt.Println(tiket)
+}
