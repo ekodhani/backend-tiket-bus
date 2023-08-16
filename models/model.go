@@ -55,3 +55,17 @@ type Otw struct {
 	Tgl_pulang    int    `json:"tgl_pulang"`
 	Tujuan        string `json:"tujuan"`
 }
+
+type Tiket struct {
+	Id_bus      int      `json:"id_bus"`
+	Kota_asal   string   `json:"kota_awal"`
+	Kota_tujuan string   `json:"kota_tujuan"`
+	Pembayaran  int      `json:"pembayan"`
+	Pergi       string   `json:"pergi"`
+	Pulang      int      `json:"pulang"`
+	Id_kursi    []string `json:"kursi"`
+}
+
+type PilihKursi struct {
+	Id_kursi string `json:"kursi"`
+}
