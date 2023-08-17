@@ -61,7 +61,7 @@ type Tiket struct {
 	Kota_asal   string   `json:"kota_awal"`
 	Kota_tujuan string   `json:"kota_tujuan"`
 	Pembayaran  int      `json:"pembayan"`
-	Pergi       string   `json:"pergi"`
+	Pergi       int      `json:"pergi"`
 	Pulang      int      `json:"pulang"`
 	Id_kursi    []string `json:"kursi"`
 }
