@@ -29,6 +29,7 @@ func SetupRouter() *gin.Engine {
 			pd_v1.POST("/getKursi", controllers.GetKursi)
 			pd_v1.POST("/getBus", controllers.GetBus)
 			pd_v1.POST("/savetiket", controllers.SaveTiket)
+			pd_v1.POST("/getbelumbayar", controllers.GetBelumBayar)
 		}
 	}
 	return router

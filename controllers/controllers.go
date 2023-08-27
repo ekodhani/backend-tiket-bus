@@ -301,3 +301,12 @@ func SaveTiket(c *gin.Context) {
 		}
 	}
 }
+
+func GetBelumBayar(c *gin.Context) {
+	// Koneksi Database
+	db, err := database.Connect()
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	defer db.Close()
+}
