@@ -7,8 +7,10 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -234,12 +236,68 @@ func GetBus(c *gin.Context) {
 }
 
 func SaveTiket(c *gin.Context) {
+	// Deklarasi struct
 	var tiket models.Tiket
 
+	// Cek Json Error ?
 	if err := c.ShouldBindJSON(&tiket); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	fmt.Println(tiket)
+	// Koneksi Database
+	db, err := database.Connect()
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	defer db.Close()
+
+	var query, query_insert_detail string
+	tiket.Create_date = time.Now().Unix()
+
+	// Insert Ke Pemesanan Tiket
+	query = "INSERT INTO pemesanan_tiket (id_bus, kota_asal, kota_tujuan, id_pembayaran, pergi, pulang, create_date, create_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+	result, err := db.Exec(query,
+		tiket.Id_bus,
+		tiket.Kota_asal,
+		tiket.Kota_tujuan,
+		tiket.Pembayaran,
+		tiket.Pergi,
+		tiket.Pulang,
+		tiket.Create_date,
+		tiket.Create_by,
+	)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	} else {
+		// GET ID tiket yang sudah di insert
+		insertedID, err := result.LastInsertId()
+		if err != nil {
+			log.Fatal(err)
+			c.JSON(http.StatusBadRequest, err.Error())
+			return
+		} else {
+			status := 0
+			// Insert Ke Detail Pemesanan Tiket
+			for i := range tiket.Data_penumpang {
+				query_insert_detail = "INSERT INTO detail_pemesanan_tiket (id_tiket, nama, nik, id_kursi, status) VALUES (?, ?, ?, ?, ?)"
+				_, err = db.Exec(query_insert_detail,
+					insertedID,
+					tiket.Data_penumpang[i].Nama,
+					tiket.Data_penumpang[i].Nik,
+					tiket.Data_penumpang[i].Id_kursi,
+					status,
+				)
+
+				if err != nil {
+					c.JSON(http.StatusBadRequest, err.Error())
+					return
+				}
+			}
+
+			c.JSON(http.StatusOK, gin.H{"message": "ok"})
+		}
+	}
 }

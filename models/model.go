@@ -57,15 +57,23 @@ type Otw struct {
 }
 
 type Tiket struct {
-	Id_bus      int      `json:"id_bus"`
-	Kota_asal   string   `json:"kota_awal"`
-	Kota_tujuan string   `json:"kota_tujuan"`
-	Pembayaran  int      `json:"pembayan"`
-	Pergi       int      `json:"pergi"`
-	Pulang      int      `json:"pulang"`
-	Id_kursi    []string `json:"kursi"`
+	Id_bus         int             `json:"id_bus"`
+	Kota_asal      string          `json:"kota_awal"`
+	Kota_tujuan    string          `json:"kota_tujuan"`
+	Pembayaran     int             `json:"pembayaran"`
+	Pergi          int64           `json:"pergi"`
+	Pulang         int64           `json:"pulang"`
+	Create_by      string          `json:"create_by"`
+	Create_date    int64           `json:"create_date"`
+	Data_penumpang []DataPenumpang `json:"data_penumpang"`
 }
 
 type PilihKursi struct {
+	Id_kursi string `json:"kursi"`
+}
+
+type DataPenumpang struct {
+	Nama     string `json:"name"`
+	Nik      string `json:"nik"`
 	Id_kursi string `json:"kursi"`
 }
