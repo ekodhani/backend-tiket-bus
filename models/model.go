@@ -63,6 +63,7 @@ type Tiket struct {
 	Pembayaran     int             `json:"pembayaran"`
 	Pergi          int64           `json:"pergi"`
 	Pulang         int64           `json:"pulang"`
+	Id_user        string          `json:"id_user"`
 	Create_by      string          `json:"create_by"`
 	Create_date    int64           `json:"create_date"`
 	Data_penumpang []DataPenumpang `json:"data_penumpang"`
@@ -76,4 +77,18 @@ type DataPenumpang struct {
 	Nama     string `json:"name"`
 	Nik      string `json:"nik"`
 	Id_kursi string `json:"kursi"`
+}
+
+type DataOrder struct {
+	Id             int             `json:"id"`
+	Id_bus         int             `json:"id_bus"`
+	Kota_asal      string          `json:"kota_awal"`
+	Kota_tujuan    string          `json:"kota_tujuan"`
+	Id_pembayaran  int             `json:"id_pembayaran"`
+	Pergi          int64           `json:"pergi"`
+	Pulang         int64           `json:"pulang"`
+	Id_user        int             `json:"id_user"`
+	Create_date    int64           `json:"create_date"`
+	Create_by      string          `json:"create_by"`
+	Data_penumpang []DataPenumpang `json:"data_penumpang"`
 }
