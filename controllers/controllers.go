@@ -206,13 +206,6 @@ func GetBus(c *gin.Context) {
 		}
 		// Tambahkan peta ke dalam slice
 		results = append(results, dataBus)
-		// // Query ke database untuk mendapatkan data kursi berdasarkan id bus
-		// getKursi, errorKursi := db.Query(`SELECT * FROM kursi WHERE id_bus = ` + strconv.Itoa(dataBus.Id) + ``)
-		// if errorKursi != nil {
-		// 	fmt.Println("Error querying kursi data:", errorKursi.Error())
-		// 	return
-		// }
-		// defer getKursi.Close()
 	}
 
 	// Cek apakah ada kesalahan saat mengiterasi melalui hasil
@@ -220,11 +213,6 @@ func GetBus(c *gin.Context) {
 		fmt.Println("Error during iteration:", err.Error())
 		return
 	}
-
-	// Jika ada Tgl Pulangnya
-	// if len(otw.Tgl_pulang) != 0 {
-	// 	fmt.Println("tgl pulang : ", otw.Tgl_pulang)
-	// }
 
 	if len(results) > 0 { // jika true
 		c.IndentedJSON(http.StatusOK, results)
@@ -256,7 +244,7 @@ func SaveTiket(c *gin.Context) {
 	tiket.Create_date = time.Now().Unix()
 
 	// Insert Ke Pemesanan Tiket
-	query = "INSERT INTO pemesanan_tiket (id_bus, kota_asal, kota_tujuan, id_pembayaran, pergi, pulang, create_date, create_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+	query = "INSERT INTO pemesanan_tiket (id_bus, kota_asal, kota_tujuan, id_pembayaran, pergi, pulang, id_user, create_date, create_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
 	result, err := db.Exec(query,
 		tiket.Id_bus,
 		tiket.Kota_asal,
@@ -264,6 +252,7 @@ func SaveTiket(c *gin.Context) {
 		tiket.Pembayaran,
 		tiket.Pergi,
 		tiket.Pulang,
+		tiket.Id_user,
 		tiket.Create_date,
 		tiket.Create_by,
 	)
@@ -303,10 +292,50 @@ func SaveTiket(c *gin.Context) {
 }
 
 func GetBelumBayar(c *gin.Context) {
+	// get id_usernya
+	var id_user int
+
+	if err := c.ShouldBindJSON(&id_user); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
 	// Koneksi Database
 	db, err := database.Connect()
 	if err != nil {
 		fmt.Println(err.Error())
 	}
 	defer db.Close()
+
+	// Query
+	query := query.GetBelumBayar()
+	rows, err := db.Query(query, strconv.Itoa(id_user))
+	// Jika Error quernya
+	if err != nil {
+		fmt.Println("Err", err.Error())
+	}
+	defer rows.Close()
+
+	// Buat Struct
+	var results []models.DataOrder
+
+	// Loop melalui setiap baris hasil dan tambahkan data ke dalam slice
+	for rows.Next() {
+		var dataOrder models.DataOrder
+		// Scan data dari baris ke variabel-variabel
+		err := rows.Scan(&dataOrder.Id, &dataOrder.Id_bus, &dataOrder.Kota_asal, &dataOrder.Kota_tujuan, &dataOrder.Id_pembayaran, &dataOrder.Pergi, &dataOrder.Pulang, &dataOrder.Id_user, &dataOrder.Create_date, &dataOrder.Create_by)
+		if err != nil {
+			fmt.Println("Error scanning row:", err.Error())
+			return
+		}
+		// Tambahkan peta ke dalam slice
+		results = append(results, dataOrder)
+	}
+
+	if len(results) > 0 { // jika true
+		c.IndentedJSON(http.StatusOK, results)
+	} else { // jika data tidak ada
+		c.IndentedJSON(http.StatusNotFound, gin.H{
+			"message": "data tidak di temukan",
+		})
+	}
 }
