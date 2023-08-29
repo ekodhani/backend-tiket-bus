@@ -244,7 +244,7 @@ func SaveTiket(c *gin.Context) {
 	tiket.Create_date = time.Now().Unix()
 
 	// Insert Ke Pemesanan Tiket
-	query = "INSERT INTO pemesanan_tiket (id_bus, kota_asal, kota_tujuan, id_pembayaran, pergi, pulang, id_user, create_date, create_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+	query = "INSERT INTO pemesanan_tiket (id_bus, kota_asal, kota_tujuan, id_pembayaran, pergi, pulang, status_pembayaran, id_user, create_date, create_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 	result, err := db.Exec(query,
 		tiket.Id_bus,
 		tiket.Kota_asal,
@@ -252,6 +252,7 @@ func SaveTiket(c *gin.Context) {
 		tiket.Pembayaran,
 		tiket.Pergi,
 		tiket.Pulang,
+		tiket.Status_pembayaran,
 		tiket.Id_user,
 		tiket.Create_date,
 		tiket.Create_by,
@@ -268,16 +269,20 @@ func SaveTiket(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, err.Error())
 			return
 		} else {
-			status := 0
+			is_cancel := 0
+			cancel_date := 0
+			var cancel_by string
 			// Insert Ke Detail Pemesanan Tiket
 			for i := range tiket.Data_penumpang {
-				query_insert_detail = "INSERT INTO detail_pemesanan_tiket (id_tiket, nama, nik, id_kursi, status) VALUES (?, ?, ?, ?, ?)"
+				query_insert_detail = "INSERT INTO detail_pemesanan_tiket (id_tiket, nama, nik, id_kursi, is_cancel, cancel_date, cancel_by) VALUES (?, ?, ?, ?, ?, ?, ?)"
 				_, err = db.Exec(query_insert_detail,
 					insertedID,
 					tiket.Data_penumpang[i].Nama,
 					tiket.Data_penumpang[i].Nik,
 					tiket.Data_penumpang[i].Id_kursi,
-					status,
+					is_cancel,
+					cancel_date,
+					cancel_by,
 				)
 
 				if err != nil {
@@ -322,7 +327,7 @@ func GetBelumBayar(c *gin.Context) {
 	for rows.Next() {
 		var dataOrder models.DataOrder
 		// Scan data dari baris ke variabel-variabel
-		err := rows.Scan(&dataOrder.Id, &dataOrder.Id_bus, &dataOrder.Kota_asal, &dataOrder.Kota_tujuan, &dataOrder.Id_pembayaran, &dataOrder.Pergi, &dataOrder.Pulang, &dataOrder.Id_user, &dataOrder.Create_date, &dataOrder.Create_by)
+		err := rows.Scan(&dataOrder.Id, &dataOrder.Kota_asal, &dataOrder.Kota_tujuan, &dataOrder.Id_pembayaran, &dataOrder.Pergi, &dataOrder.Pulang, &dataOrder.Status_pembayaran, &dataOrder.Id_user, &dataOrder.Create_date, &dataOrder.Create_by, &dataOrder.Nama_bus, &dataOrder.Nomor_polisi, &dataOrder.Type, &dataOrder.Harga, &dataOrder.Jumlah_kursi)
 		if err != nil {
 			fmt.Println("Error scanning row:", err.Error())
 			return
