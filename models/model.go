@@ -91,3 +91,7 @@ type DataOrder struct {
 	Create_date   int64  `json:"create_date"`
 	Create_by     string `json:"create_by"`
 }
+
+type Id_user struct {
+	Id string `json:"id_user"`
+}

@@ -293,11 +293,9 @@ func SaveTiket(c *gin.Context) {
 
 func GetBelumBayar(c *gin.Context) {
 	// get id_usernya
-	var id_user string
+	var id_user models.Id_user
 
-	if err := c.ShouldBindJSON(&struct {
-		IDUser string `json:"id_user"`
-	}{IDUser: id_user}); err != nil {
+	if err := c.ShouldBindJSON(&id_user); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
@@ -309,8 +307,8 @@ func GetBelumBayar(c *gin.Context) {
 	defer db.Close()
 
 	// Query
-	query := query.GetBelumBayar()
-	rows, err := db.Query(query, id_user)
+	query := query.GetBelumBayar(id_user.Id)
+	rows, err := db.Query(query)
 	// Jika Error quernya
 	if err != nil {
 		fmt.Println("Err", err.Error())
