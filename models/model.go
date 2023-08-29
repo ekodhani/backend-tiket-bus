@@ -80,15 +80,14 @@ type DataPenumpang struct {
 }
 
 type DataOrder struct {
-	Id             int             `json:"id"`
-	Id_bus         int             `json:"id_bus"`
-	Kota_asal      string          `json:"kota_awal"`
-	Kota_tujuan    string          `json:"kota_tujuan"`
-	Id_pembayaran  int             `json:"id_pembayaran"`
-	Pergi          int64           `json:"pergi"`
-	Pulang         int64           `json:"pulang"`
-	Id_user        int             `json:"id_user"`
-	Create_date    int64           `json:"create_date"`
-	Create_by      string          `json:"create_by"`
-	Data_penumpang []DataPenumpang `json:"data_penumpang"`
+	Id            int    `json:"id"`
+	Id_bus        int    `json:"id_bus"`
+	Kota_asal     string `json:"kota_awal"`
+	Kota_tujuan   string `json:"kota_tujuan"`
+	Id_pembayaran int    `json:"id_pembayaran"`
+	Pergi         int64  `json:"pergi"`
+	Pulang        int64  `json:"pulang"`
+	Id_user       int    `json:"id_user"`
+	Create_date   int64  `json:"create_date"`
+	Create_by     string `json:"create_by"`
 }
