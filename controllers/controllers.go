@@ -344,3 +344,51 @@ func GetBelumBayar(c *gin.Context) {
 		})
 	}
 }
+
+func GetDetailOrder(c *gin.Context) {
+	// GET Id menggunakan struct yang sama saat get id user
+	var id models.Id_user // id detail order
+	if err := c.ShouldBindJSON(&id); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	// Koneksi Database
+	db, err := database.Connect()
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	defer db.Close()
+
+	// Query
+	query := query.GetDetailOrder(id.Id)
+	rows, err := db.Query(query)
+	// Jika Error quernya
+	if err != nil {
+		fmt.Println("Err", err.Error())
+	}
+	defer rows.Close()
+
+	// Buat Struct
+	var results []models.DataDetailOrder
+
+	// Loop melalui setiap baris hasil dan tambahkan data ke dalam slice
+	for rows.Next() {
+		var dataOrder models.DataDetailOrder
+		// Scan data dari baris ke variabel-variabel
+		err := rows.Scan(&dataOrder.Id, &dataOrder.Nama, &dataOrder.Nik, &dataOrder.Id_kursi, &dataOrder.Is_cancel, &dataOrder.Cancel_date, &dataOrder.Cancel_by)
+		if err != nil {
+			fmt.Println("Error scanning row:", err.Error())
+			return
+		}
+		// Tambahkan peta ke dalam slice
+		results = append(results, dataOrder)
+	}
+
+	if len(results) > 0 { // jika true
+		c.IndentedJSON(http.StatusOK, results)
+	} else { // jika data tidak ada
+		c.IndentedJSON(http.StatusNotFound, gin.H{
+			"message": "data tidak di temukan",
+		})
+	}
+}

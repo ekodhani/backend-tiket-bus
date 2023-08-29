@@ -101,3 +101,13 @@ type DataOrder struct {
 type Id_user struct {
 	Id string `json:"id_user"`
 }
+
+type DataDetailOrder struct {
+	Id          int    `json:"id"`
+	Nama        string `json:"nama"`
+	Nik         int    `json:"nik"`
+	Id_kursi    int    `json:"id_kursi"`
+	Is_cancel   int    `json:"is_cancel"`
+	Cancel_date int64  `json:"cancel_date"`
+	Cancel_by   string `json:"cancel_by"`
+}

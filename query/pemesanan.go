@@ -23,3 +23,7 @@ func GetBelumBayar(id_user string) string {
 	
 	WHERE A.id_user = ` + id_user
 }
+
+func GetDetailOrder(id_tiket string) string {
+	return `SELECT id, nama, nik, id_kursi, is_cancel, cancel_date, cancel_by FROM detail_pemesanan_tiket where id_tiket = ` + id_tiket
+}
