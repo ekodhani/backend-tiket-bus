@@ -293,9 +293,11 @@ func SaveTiket(c *gin.Context) {
 
 func GetBelumBayar(c *gin.Context) {
 	// get id_usernya
-	var id_user int
+	var id_user string
 
-	if err := c.ShouldBindJSON(&id_user); err != nil {
+	if err := c.ShouldBindJSON(&struct {
+		IDUser string `json:"id_user"`
+	}{IDUser: id_user}); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
@@ -308,7 +310,7 @@ func GetBelumBayar(c *gin.Context) {
 
 	// Query
 	query := query.GetBelumBayar()
-	rows, err := db.Query(query, strconv.Itoa(id_user))
+	rows, err := db.Query(query, id_user)
 	// Jika Error quernya
 	if err != nil {
 		fmt.Println("Err", err.Error())
